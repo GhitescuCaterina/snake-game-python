@@ -5,40 +5,37 @@ import tkinter.messagebox
 
 
 class SnakeGame:
-    def __init__(self, root, width, height, obstacles_file, block_size):
+    def __init__(self, root, block_size, obstacles_file):
         self.root = root
-        self.root.title("Snake Game")
-        self.width = width
-        self.height = height
         self.block_size = block_size
-        self.obstacles = self.load_obstacles(obstacles_file)
+        self.load_data(obstacles_file)
 
+        self.root.title("Snake Game")
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
-
         x = (screen_width - self.width) // 2
         y = (screen_height - self.height) // 2
-
-        self.root.geometry(f"{width}x{height}+{x}+{y}")
+        self.root.geometry(f"{self.width}x{self.height}+{x}+{y}")
 
         self.create_start_screen()
 
         self.score = 0
         self.high_score = 0
-
-        self.snake = [(self.width // 2, self.height // 2), (self.width // 2 - self.block_size, self.height // 2)]
+        self.snake = [(self.width // 2, self.height // 2),
+                      (self.width // 2 - self.block_size, self.height // 2)]
         self.food = self.generate_food()
-
         self.direction = None
         self.game_over = False
         self.game_started = False
 
-        # Înlătură apelurile de desenare și comentariile legate de canvas
-        # self.draw_obstacles()
-        # self.draw_snake()
-        # self.draw_food()
-
         self.root.after(0, self.wait_for_start)
+
+    def load_data(self, obstacles_file):
+        with open(obstacles_file, "r") as file:
+            data = json.load(file)
+
+        self.width, self.height = data["dimensiuniTabla"]["width"], data["dimensiuniTabla"]["height"]
+        self.obstacles = [(obs["x"], obs["y"]) for obs in data["obstacole"]]
 
     def create_start_screen(self):
         self.start_frame = tk.Frame(self.root)
@@ -82,7 +79,8 @@ class SnakeGame:
     def load_obstacles(self, obstacles_file):
         with open(obstacles_file, "r") as file:
             obstacles_data = json.load(file)
-        return [(obstacle["x"], obstacle["y"]) for obstacle in obstacles_data]
+        return [(obs["x"] // self.block_size * self.block_size, obs["y"] // self.block_size * self.block_size) for obs
+                in obstacles_data]
 
     def wait_for_start(self):
         if not self.game_started:
@@ -90,7 +88,7 @@ class SnakeGame:
         else:
             pass
 
-    def start_game(self):
+    def start_game(self, event=None):
         self.start_frame.pack_forget()
 
         self.canvas = tk.Canvas(self.root, width=self.width, height=self.height)
@@ -119,7 +117,6 @@ class SnakeGame:
         self.canvas.create_text(self.width // 2, self.height // 2, text=start_message, fill="black", font=("Arial", 16))
 
         self.root.after(0, self.wait_for_start)
-
 
     def start_game_up(self, event):
         if not self.game_started:
@@ -171,47 +168,42 @@ class SnakeGame:
 
     def generate_food(self):
         while True:
-            x = random.randint(0, self.width // 10 - 1) * 10
-            y = random.randint(0, self.height // 10 - 1) * 10
-            if (x, y) not in self.snake and (x, y) not in self.obstacles:
+            x = random.randint(0, (self.width - self.block_size) // self.block_size) * self.block_size
+            y = random.randint(0, (self.height - self.block_size) // self.block_size) * self.block_size
+            if (x, y) not in self.snake and all((x != obs[0] or y != obs[1]) for obs in self.obstacles):
                 return x, y
 
     def draw_obstacles(self):
         for obstacle in self.obstacles:
             x, y = obstacle
-            self.canvas.create_rectangle(x, y, x + 10, y + 10, fill="red")
+            self.canvas.create_rectangle(x, y, x + self.block_size, y + self.block_size, fill="red")
 
     def draw_snake(self):
         for segment in self.snake:
             x, y = segment
-            self.canvas.create_rectangle(x, y, x + 10, y + 10, fill="green")
+            self.canvas.create_rectangle(x, y, x + self.block_size, y + self.block_size, fill="green")
 
     def draw_food(self):
         x, y = self.food
-        self.canvas.create_oval(x, y, x + 10, y + 10, fill="red")
+        self.canvas.create_oval(x, y, x + self.block_size, y + self.block_size, fill="red")
 
     def update(self):
         if not self.game_over:
             x, y = self.snake[0]
-            if self.direction == "Left":
-                x -= 10
-            elif self.direction == "Right":
-                x += 10
-            elif self.direction == "Up":
-                y -= 10
-            elif self.direction == "Down":
-                y += 10
 
-            if (x, y) in self.snake or (
-                    x, y) in self.obstacles or x < 0 or x >= self.width or y < 0 or y >= self.height:
+            if self.direction == "Left":
+                x -= self.block_size
+            elif self.direction == "Right":
+                x += self.block_size
+            elif self.direction == "Up":
+                y -= self.block_size
+            elif self.direction == "Down":
+                y += self.block_size
+
+            if (x, y) in self.snake or x < 0 or x >= self.width or y < 0 or y >= self.height or any(
+                    (x, y) == obs for obs in self.obstacles):
                 self.game_over = True
-                if self.score > self.high_score:
-                    self.high_score = self.score
-                self.canvas.create_text(self.width // 2, self.height // 2, text="Game Over", fill="red",
-                                        font=("Arial", 20))
-                self.canvas.create_text(self.width // 2, self.height // 2 + 30, text=f"Score: {self.score}", fill="red")
-                self.canvas.create_text(self.width // 2, self.height // 2 + 60, text=f"High Score: {self.high_score}",
-                                        fill="red")
+                self.display_game_over()
                 return
 
             self.snake.insert(0, (x, y))
@@ -219,7 +211,6 @@ class SnakeGame:
             if (x, y) == self.food:
                 self.score += 1
                 self.food = self.generate_food()
-                self.draw_food()
             else:
                 self.snake.pop()
 
@@ -227,15 +218,52 @@ class SnakeGame:
             self.draw_obstacles()
             self.draw_snake()
             self.draw_food()
-            self.canvas.after(100, self.update)
+
+            self.root.after(100, self.update)
         else:
-            self.canvas.after(100, self.update)
+            self.display_game_over()
+
+    def display_game_over(self):
+        if self.score > self.high_score:
+            self.high_score = self.score
+
+        game_over_message = f"GAME OVER\nScorul tau: {self.score}\nHigh Score: {self.high_score}\n\nPlay again?"
+        if tk.messagebox.askyesno("Game Over", game_over_message):
+            self.reset_game()
+        else:
+            self.root.quit()
+
+    def reset_game(self):
+        self.canvas.delete("all")
+
+        self.score = 0
+        self.game_over = False
+        self.game_started = False
+
+        initial_position_x = self.width // 2
+        initial_position_y = self.height // 2
+        self.snake = [(initial_position_x, initial_position_y),
+                      (initial_position_x - self.block_size, initial_position_y)]
+        self.direction = None
+
+        self.food = self.generate_food()
+
+        self.draw_obstacles()
+        self.draw_snake()
+        self.draw_food()
+
+        start_message = "Press W, A, S, D to start"
+        self.canvas.create_text(self.width // 2, self.height // 2, text=start_message, fill="black", font=("Arial", 16))
+
+        self.canvas.bind_all("<KeyPress>", self.on_key_press)
+
+        self.root.after(0, self.wait_for_start)
 
 
 def start_game():
-    obstacles_file = "obstacol.json"
+    obstacles_file = "tabla.json"
     root = tk.Tk()
-    game = SnakeGame(root, 600, 600, obstacles_file, block_size=30)
+    game = SnakeGame(root, block_size=20, obstacles_file=obstacles_file)
     root.mainloop()
 
 
