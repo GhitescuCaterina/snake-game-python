@@ -30,6 +30,12 @@ class SnakeGame:
 
         self.root.after(0, self.wait_for_start)
 
+        self.level_config = {
+            "usor": {"obstacole": 3, "viteza": 150},
+            "normal": {"obstacole": 5, "viteza": 150},
+            "hardcore": {"obstacole": 10, "viteza": 75}
+        }
+
     def load_data(self, obstacles_file):
         with open(obstacles_file, "r") as file:
             data = json.load(file)
@@ -37,11 +43,25 @@ class SnakeGame:
         self.width, self.height = data["dimensiuniTabla"]["width"], data["dimensiuniTabla"]["height"]
         self.obstacles = [(obs["x"], obs["y"]) for obs in data["obstacole"]]
 
+    def show_difficulty_options(self):
+        self.start_frame.pack_forget()
+        self.difficulty_frame = tk.Frame(self.root)
+        self.difficulty_frame.pack(expand=True)
+
+        easy_button = tk.Button(self.difficulty_frame, text="Usor", command=lambda: self.start_game("usor"))
+        easy_button.pack(pady=5)
+
+        normal_button = tk.Button(self.difficulty_frame, text="Normal", command=lambda: self.start_game("normal"))
+        normal_button.pack(pady=5)
+
+        hard_button = tk.Button(self.difficulty_frame, text="Greu", command=lambda: self.start_game("hardcore"))
+        hard_button.pack(pady=5)
+
     def create_start_screen(self):
         self.start_frame = tk.Frame(self.root)
-        self.start_frame.pack()
+        self.start_frame.pack(expand=True)
 
-        play_button = tk.Button(self.start_frame, text="Play", command=self.start_game)
+        play_button = tk.Button(self.start_frame, text="Play", command=self.show_difficulty_options)
         play_button.pack(pady=10)
 
         how_to_play_button = tk.Button(self.start_frame, text="How to Play", command=self.show_instructions)
@@ -51,12 +71,24 @@ class SnakeGame:
         quit_button.pack(pady=10)
 
     def show_instructions(self):
-        instructions = "                     Instructiuni:\n\n" \
-                       "Foloseste W, A, S, D pentru a misca pitonul.\n" \
-                       "             Mananca pentru a creste.\n" \
-                       "     Nu intra in margini sau in obstacole.\n" \
-                       "         Nu iti manca propria coada !!"
-        tk.messagebox.showinfo("How to Play", instructions)
+        self.start_frame.pack_forget()
+        self.instructions_frame = tk.Frame(self.root)
+        self.instructions_frame.pack(expand=True)
+
+        instructions_text = "Instructiuni:\n\n" \
+                            "Foloseste W, A, S, D pentru a misca pitonul.\n" \
+                            "Mananca pentru a creste.\n" \
+                            "Nu intra in margini sau in obstacole.\n" \
+                            "Nu iti manca propria coada !!"
+        instructions_label = tk.Label(self.instructions_frame, text=instructions_text, font=("Arial", 14))
+        instructions_label.pack(pady=10)
+
+        back_button = tk.Button(self.instructions_frame, text="Inapoi", command=self.show_start_screen)
+        back_button.pack(pady=10)
+
+    def show_start_screen(self):
+        self.instructions_frame.pack_forget()
+        self.create_start_screen()
 
     def on_key_press(self, event):
         if not self.game_started:
@@ -88,8 +120,11 @@ class SnakeGame:
         else:
             pass
 
-    def start_game(self, event=None):
+    def start_game(self, nivel="normal", event=None):
         self.start_frame.pack_forget()
+
+        if hasattr(self, 'difficulty_frame'):
+            self.difficulty_frame.pack_forget()
 
         self.canvas = tk.Canvas(self.root, width=self.width, height=self.height)
         self.canvas.pack()
@@ -101,6 +136,9 @@ class SnakeGame:
         self.direction = None
         self.game_over = False
         self.game_started = False
+
+        self.current_level = nivel
+        self.set_game_parameters()
 
         self.canvas.bind_all("<KeyPress>", self.on_key_press)
 
@@ -117,6 +155,20 @@ class SnakeGame:
         self.canvas.create_text(self.width // 2, self.height // 2, text=start_message, fill="black", font=("Arial", 16))
 
         self.root.after(0, self.wait_for_start)
+
+    def set_game_parameters(self):
+        config = self.level_config[self.current_level]
+        self.obstacles = self.generate_random_obstacles(config["obstacole"])
+        self.update_speed = config["viteza"]
+
+    def generate_random_obstacles(self, number):
+        obstacole = []
+        while len(obstacole) < number:
+            x = random.randint(0, (self.width - self.block_size) // self.block_size) * self.block_size
+            y = random.randint(0, (self.height - self.block_size) // self.block_size) * self.block_size
+            if (x, y) not in self.snake and (x, y) not in obstacole:
+                obstacole.append((x, y))
+        return obstacole
 
     def start_game_up(self, event):
         if not self.game_started:
@@ -219,7 +271,7 @@ class SnakeGame:
             self.draw_snake()
             self.draw_food()
 
-            self.root.after(100, self.update)
+            self.root.after(self.update_speed, self.update)
         else:
             self.display_game_over()
 
@@ -231,7 +283,19 @@ class SnakeGame:
         if tk.messagebox.askyesno("Game Over", game_over_message):
             self.reset_game()
         else:
-            self.root.quit()
+            self.reset_to_start_screen()
+
+    def reset_to_start_screen(self):
+        self.canvas.pack_forget()
+        self.create_start_screen()
+
+        self.score = 0
+        self.game_over = False
+        self.game_started = False
+        self.snake = [(self.width // 2, self.height // 2),
+                      (self.width // 2 - self.block_size, self.height // 2)]
+        self.direction = None
+        self.food = self.generate_food()
 
     def reset_game(self):
         self.canvas.delete("all")
