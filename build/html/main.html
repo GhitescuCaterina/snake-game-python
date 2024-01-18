@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>main module &#8212; Snake Game 18.01.2024 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=9194700e"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Snake-Game" href="modules.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-main">
+<span id="main-module"></span><h1>main module<a class="headerlink" href="#module-main" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="main.SnakeGame">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">SnakeGame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obstacles_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Clasa care implementeaza jocul Snake.</p>
+<p>Atribute:</p>
+<ul class="simple">
+<li><p>root: obiect de tip Tk - fereastra principala a jocului</p></li>
+<li><p>block_size: int - dimensiunea unui bloc din tabla de joc</p></li>
+<li><p>obstacles_file: str - numele fisierului care contine obstacolele</p></li>
+<li><p>score_panel: obiect de tip Frame - panoul care contine scorul si high score-ul</p></li>
+<li><p>score_label: obiect de tip Label - label-ul care afiseaza scorul si high score-ul</p></li>
+<li><p>button_font: tuple - font-ul butoanelor</p></li>
+<li><p>snake_color: str - culoarea sarpelui</p></li>
+<li><p>food_color: str - culoarea mancarii</p></li>
+<li><p>obstacle_color: str - culoarea obstacolelor</p></li>
+<li><p>width: int - latimea ferestrei</p></li>
+<li><p>height: int - inaltimea ferestrei</p></li>
+<li><p>data: dict - dictionarul care contine datele din fisierul obstacles_file</p></li>
+<li><p>obstacles: list - lista de obstacole</p></li>
+<li><p>score: int - scorul curent</p></li>
+<li><p>high_score: int - high score-ul</p></li>
+<li><p>snake: list - lista de coordonate a segmentelor sarpelui</p></li>
+<li><p>food: tuple - coordonatele mancarii</p></li>
+<li><p>direction: str - directia in care se misca sarpele</p></li>
+<li><p>game_over: bool - True daca jocul s-a terminat, False altfel</p></li>
+<li><p>game_started: bool - True daca jocul a inceput, False altfel</p></li>
+<li><p>canvas: obiect de tip Canvas - canvas-ul pe care se deseneaza jocul</p></li>
+<li><p>level_config: dict - dictionarul care contine configuratia nivelelor</p></li>
+</ul>
+<p>Metode:</p>
+<ul class="simple">
+<li><p>load_data(obstacles_file) - incarca datele din fisierul obstacles_file</p></li>
+<li><p>get_obstacles_for_level(level) - returneaza obstacolele pentru nivelul level</p></li>
+<li><p>set_game_parameters(nivel) - seteaza parametrii jocului pentru nivelul nivel</p></li>
+<li><p>load_obstacles(obstacles_file) - incarca obstacolele din fisierul obstacles_file</p></li>
+<li><p>create_start_screen() - creeaza ecranul de start</p></li>
+<li><p>show_difficulty_options() - afiseaza optiunile de dificultate</p></li>
+<li><p>show_instructions() - afiseaza instructiunile</p></li>
+<li><p>show_start_screen() - afiseaza ecranul de start</p></li>
+<li><p>on_key_press(event) - gestioneaza apasarea unei taste</p></li>
+<li><p>wait_for_start() - asteapta ca jocul sa inceapa</p></li>
+<li><p>start_game(nivel=”normal”, event=None) - incepe jocul</p></li>
+<li><p>start_game_up(event) - incepe jocul cu directia Up</p></li>
+<li><p>start_game_down(event) - incepe jocul cu directia Down</p></li>
+<li><p>start_game_left(event) - incepe jocul cu directia Left</p></li>
+<li><p>start_game_right(event) - incepe jocul cu directia Right</p></li>
+<li><p>move_left(event) - muta sarpele la stanga</p></li>
+<li><p>move_right(event) - muta sarpele la dreapta</p></li>
+<li><p>move_up(event) - muta sarpele in sus</p></li>
+<li><p>move_down(event) - muta sarpele in jos</p></li>
+<li><p>generate_food() - genereaza mancarea</p></li>
+<li><p>update() - actualizeaza jocul</p></li>
+<li><p>display_game_over() - afiseaza mesajul de Game Over</p></li>
+<li><p>reset_to_start_screen() - reseteaza jocul la ecranul de start</p></li>
+<li><p>reset_game() - reseteaza jocul</p></li>
+<li><p>draw_snake() - deseneaza sarpele</p></li>
+<li><p>draw_food() - deseneaza mancarea</p></li>
+<li><p>draw_obstacles() - deseneaza obstacolele</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.create_start_screen">
+<span class="sig-name descname"><span class="pre">create_start_screen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.create_start_screen" title="Link to this definition">¶</a></dt>
+<dd><p>Creează ecranul de start al jocului.</p>
+<p>Această metodă inițializează ecranul de start cu titlul jocului și butoane pentru a începe jocul,
+a vedea instrucțiunile sau a ieși din joc. Butonul de start va apela metoda <cite>show_difficulty_options</cite>
+pentru a selecta nivelul de dificultate.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>start_frame (tk.Frame): Un cadru care conține toate widget-urile pentru ecranul de start.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.display_game_over">
+<span class="sig-name descname"><span class="pre">display_game_over</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.display_game_over" title="Link to this definition">¶</a></dt>
+<dd><p>Afișează fereastra de Game Over și opțiunile după terminarea jocului.</p>
+<p>Această metodă se declanșează atunci când jocul se termină (șarpele se lovește de un obstacol, de margini sau de sine). Afișează scorul actual, cel mai bun scor și oferă opțiunea de a juca din nou sau de a încheia jocul.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.draw_food">
+<span class="sig-name descname"><span class="pre">draw_food</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.draw_food" title="Link to this definition">¶</a></dt>
+<dd><p>Desenează mâncarea pe tabla de joc.</p>
+<p>Această metodă desenează un cerc reprezentând mâncarea șarpelui în locația generată aleatoriu pe tabla de
+joc.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.draw_obstacles">
+<span class="sig-name descname"><span class="pre">draw_obstacles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.draw_obstacles" title="Link to this definition">¶</a></dt>
+<dd><p>Desenează obstacolele pe tabla de joc.</p>
+<p>Această metodă iterează prin lista de obstacole și desenează fiecare obstacol pe canvas. Fiecare obstacol
+este reprezentat printr-un dreptunghi în poziția specificată.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.draw_snake">
+<span class="sig-name descname"><span class="pre">draw_snake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.draw_snake" title="Link to this definition">¶</a></dt>
+<dd><p>Desenează șarpele pe tabla de joc.</p>
+<p>Această metodă parcurge fiecare segment al șarpelui și îl desenează pe canvas. Fiecare segment este reprezentat printr-un dreptunghi în poziția corespunzătoare.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.generate_food">
+<span class="sig-name descname"><span class="pre">generate_food</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.generate_food" title="Link to this definition">¶</a></dt>
+<dd><p>Generează poziția aleatoare pentru mâncarea șarpelui.</p>
+<p>Această metodă selectează aleator un punct pe tabla de joc unde va apărea mâncarea. Punctul este ales astfel încât să nu se afle pe șarpe sau pe un obstacol.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>tuple: Un tuplu (x, y) reprezentând coordonatele mâncării.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.get_obstacles_for_level">
+<span class="sig-name descname"><span class="pre">get_obstacles_for_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.get_obstacles_for_level" title="Link to this definition">¶</a></dt>
+<dd><p>Obține coordonatele obstacolelor pentru un anumit nivel.</p>
+<p>Această metodă returnează o listă de coordonate (tupluri) pentru obstacolele specifice nivelului ales.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>level (str): Nivelul de dificultate pentru care se extrag obstacolele. Valori acceptate: “usor”, “normal”, “hardcore”.</p>
+</dd>
+<dt>Returns:</dt><dd><p>list of tuple: O listă de coordonate (x, y) pentru fiecare obstacol.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obstacles_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.load_data" title="Link to this definition">¶</a></dt>
+<dd><p>Încarcă datele jocului dintr-un fișier JSON.</p>
+<p>Această metodă inițializează dimensiunile tablei de joc și obstacolele pentru nivelul ușor.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>obstacles_file (str): Calea către fișierul JSON ce conține datele jocului, inclusiv dimensiunile tablei și obstacolele.</p>
+</dd>
+<dt>Raises:</dt><dd><p>FileNotFoundError: Dacă fișierul specificat nu există.
+JSONDecodeError: Dacă fișierul nu este un JSON valid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.load_obstacles">
+<span class="sig-name descname"><span class="pre">load_obstacles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obstacles_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.load_obstacles" title="Link to this definition">¶</a></dt>
+<dd><p>Încarcă și procesează obstacolele dintr-un fișier JSON.</p>
+<p>Această metodă returnează o listă de coordonate adaptate la dimensiunea blocului jocului.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>obstacles_file (str): Calea către fișierul JSON ce conține coordonatele obstacolelor.</p>
+</dd>
+<dt>Returns:</dt><dd><p>list of tuple: O listă de coordonate (x, y) adaptate pentru obstacole.</p>
+</dd>
+<dt>Raises:</dt><dd><p>FileNotFoundError: Dacă fișierul specificat nu există.
+JSONDecodeError: Dacă fișierul nu este un JSON valid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.move_down">
+<span class="sig-name descname"><span class="pre">move_down</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.move_down" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.move_left">
+<span class="sig-name descname"><span class="pre">move_left</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.move_left" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.move_right">
+<span class="sig-name descname"><span class="pre">move_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.move_right" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.move_up">
+<span class="sig-name descname"><span class="pre">move_up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.move_up" title="Link to this definition">¶</a></dt>
+<dd><p>Setează direcția șarpelui spre sus.</p>
+<p>Această funcție modifică direcția șarpelui spre sus, dacă acest lucru este posibil
+(adică șarpele nu se mișcă deja în direcția opusă). La fel este si pentru move_down, move_left, move_right.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>event (tk.Event): Evenimentul generat de apăsarea tastei corespunzătoare.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.on_key_press">
+<span class="sig-name descname"><span class="pre">on_key_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.on_key_press" title="Link to this definition">¶</a></dt>
+<dd><p>Gestionarea evenimentelor de apăsare a tastelor.</p>
+<p>Această funcție stabilește direcția șarpelui în funcție de tasta apăsată (W, A, S, D).
+Înainte de începerea jocului, direcția este setată și jocul începe. Dacă jocul a început deja,
+modifică direcția șarpelui fără a permite acestuia să se întoarcă direct înapoi.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>event (tk.Event): Evenimentul generat de apăsarea unei taste.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.reset_game">
+<span class="sig-name descname"><span class="pre">reset_game</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.reset_game" title="Link to this definition">¶</a></dt>
+<dd><p>Resetează jocul păstrând nivelul curent.</p>
+<p>Această metodă resetează starea jocului (șarpele, scorul, mâncarea) fără a schimba nivelul curent de dificultate. Folosită pentru a începe un nou joc la același nivel de dificultate.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.reset_to_start_screen">
+<span class="sig-name descname"><span class="pre">reset_to_start_screen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.reset_to_start_screen" title="Link to this definition">¶</a></dt>
+<dd><p>Reîntoarce jocul la ecranul de start.</p>
+<p>Această metodă este apelată pentru a reîncepe jocul de la început, resetând tabla de joc, scorul și starea șarpelui.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.set_game_parameters">
+<span class="sig-name descname"><span class="pre">set_game_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nivel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.set_game_parameters" title="Link to this definition">¶</a></dt>
+<dd><p>Setează parametrii jocului în funcție de nivelul ales.</p>
+<p>Această metodă actualizează setările de obstacole și viteza șarpelui în funcție de nivelul de dificultate specificat.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>nivel (str): Nivelul de dificultate pentru care se setează parametrii. Valori acceptate: “usor”, “normal”, “hardcore”.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.show_difficulty_options">
+<span class="sig-name descname"><span class="pre">show_difficulty_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.show_difficulty_options" title="Link to this definition">¶</a></dt>
+<dd><p>Afișează opțiunile de dificultate pentru joc.</p>
+<p>Această metodă creează un nou cadru care conține butoane pentru selectarea nivelului de dificultate:
+ușor, normal și greu. Fiecare buton va începe jocul la dificultatea respectivă prin apelarea metodei
+<cite>start_game</cite> cu argumentul corespunzător nivelului.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>difficulty_frame (tk.Frame): Un cadru care conține butoanele pentru selectarea dificultății.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.show_instructions">
+<span class="sig-name descname"><span class="pre">show_instructions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.show_instructions" title="Link to this definition">¶</a></dt>
+<dd><p>Afișează instrucțiunile jocului.</p>
+<p>Această metodă afișează un cadru care conține instrucțiunile pentru joc, cum ar fi controlul șarpelui și
+regulile de bază. Include de asemenea un buton pentru a reveni la ecranul de start.</p>
+<p>Attributes: instructions_frame (tk.Frame): Un cadru care conține instrucțiunile jocului și un buton de
+întoarcere la ecranul de start.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.show_start_screen">
+<span class="sig-name descname"><span class="pre">show_start_screen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.show_start_screen" title="Link to this definition">¶</a></dt>
+<dd><p>Revine la ecranul de start al jocului.</p>
+<p>Această metodă ascunde cadrele curente (cum ar fi cadrele de dificultate sau instrucțiuni) și reafișează
+ecranul de start. Este folosită pentru a oferi utilizatorului posibilitatea de a reveni la ecranul de
+start fără a închide jocul.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.start_game">
+<span class="sig-name descname"><span class="pre">start_game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nivel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.start_game" title="Link to this definition">¶</a></dt>
+<dd><p>Începe jocul la nivelul specificat.</p>
+<p>Această funcție inițializează jocul, stabilind nivelul de dificultate, poziția inițială
+a șarpelui, mâncarea și obstacolele. De asemenea, pregătește ecranul de joc și se leagă
+de evenimentele de apăsare a tastelor.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>nivel (str): Nivelul de dificultate al jocului (‘usor’, ‘normal’, ‘hardcore’).
+event (tk.Event): Evenimentul (opțional) care a declanșat apelul funcției.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.start_game_down">
+<span class="sig-name descname"><span class="pre">start_game_down</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.start_game_down" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.start_game_left">
+<span class="sig-name descname"><span class="pre">start_game_left</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.start_game_left" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.start_game_right">
+<span class="sig-name descname"><span class="pre">start_game_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.start_game_right" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.start_game_up">
+<span class="sig-name descname"><span class="pre">start_game_up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.start_game_up" title="Link to this definition">¶</a></dt>
+<dd><p>Inițializează jocul și setează direcția de început spre sus.</p>
+<p>Această funcție este legată de evenimentul de apăsare a tastei W. Setează direcția șarpelui
+spre sus și începe jocul. La fel este si pentru start_game_down, start_game_left, start_game_right.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>event (tk.Event): Evenimentul generat de apăsarea tastei W.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.update" title="Link to this definition">¶</a></dt>
+<dd><p>Actualizează starea jocului la fiecare frame.</p>
+<p>Această metodă gestionează logica de mișcare a șarpelui, verifică coliziunile și actualizează scorul. De asemenea, redesenează șarpele, mâncarea și obstacolele pe tabla de joc.
+Dacă șarpele se lovește de margini, de sine sau de un obstacol, jocul se termină.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.SnakeGame.wait_for_start">
+<span class="sig-name descname"><span class="pre">wait_for_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.SnakeGame.wait_for_start" title="Link to this definition">¶</a></dt>
+<dd><p>Așteaptă începerea jocului.</p>
+<p>Această funcție rulează într-o buclă până când jocul este inițiat, verificând dacă
+utilizatorul a apăsat o tastă de direcție pentru a începe jocul.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.start_game">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">start_game</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.start_game" title="Link to this definition">¶</a></dt>
+<dd><p>Inițiază și rulează jocul Snake.</p>
+<p>Această funcție creează fereastra principală a jocului, inițializează jocul Snake cu parametrii specificați
+și intră în bucla principală a evenimentelor Tkinter. Este punctul de intrare principal al jocului.</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Snake Game</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Snake-Game</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">main module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">Snake-Game</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">Snake-Game</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Ghitescu Caterina.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/main.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
