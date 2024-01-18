@@ -7,8 +7,20 @@ import tkinter.messagebox
 class SnakeGame:
     def __init__(self, root, block_size, obstacles_file):
         self.root = root
+        self.root.configure(bg='lightblue')
         self.block_size = block_size
         self.load_data(obstacles_file)
+
+        self.score_panel = tk.Frame(root, height=30, bg="lightblue")
+        self.score_panel.pack(side="top", fill="x")
+        self.score_label = tk.Label(self.score_panel, font=("Helvetica", 16), bg="lightblue")
+        self.score_label.pack()
+
+        self.button_font = ("Helvetica", 20, "bold")
+
+        self.snake_color = "green"
+        self.food_color = "red"
+        self.obstacle_color = "blue"
 
         self.root.title("Snake Game")
         screen_width = self.root.winfo_screenwidth()
@@ -45,34 +57,47 @@ class SnakeGame:
 
     def show_difficulty_options(self):
         self.start_frame.pack_forget()
-        self.difficulty_frame = tk.Frame(self.root)
+        self.difficulty_frame = tk.Frame(self.root, bg="lightblue")
         self.difficulty_frame.pack(expand=True)
 
-        easy_button = tk.Button(self.difficulty_frame, text="Usor", command=lambda: self.start_game("usor"))
-        easy_button.pack(pady=5)
+        easy_button = tk.Button(self.difficulty_frame, text="Usor", command=lambda: self.start_game("usor"),
+                                font=self.button_font)
+        easy_button.pack(pady=10)
 
-        normal_button = tk.Button(self.difficulty_frame, text="Normal", command=lambda: self.start_game("normal"))
-        normal_button.pack(pady=5)
+        normal_button = tk.Button(self.difficulty_frame, text="Normal", command=lambda: self.start_game("normal"),
+                                  font=self.button_font)
+        normal_button.pack(pady=10)
 
-        hard_button = tk.Button(self.difficulty_frame, text="Greu", command=lambda: self.start_game("hardcore"))
-        hard_button.pack(pady=5)
+        hard_button = tk.Button(self.difficulty_frame, text="Greu", command=lambda: self.start_game("hardcore"),
+                                font=self.button_font)
+        hard_button.pack(pady=10)
+
+        back_button = tk.Button(self.difficulty_frame, text="Inapoi", command=self.show_start_screen,
+                                font=self.button_font)
+        back_button.pack(pady=40)
 
     def create_start_screen(self):
-        self.start_frame = tk.Frame(self.root)
+        self.start_frame = tk.Frame(self.root, bg="lightblue")
         self.start_frame.pack(expand=True)
 
-        play_button = tk.Button(self.start_frame, text="Play", command=self.show_difficulty_options)
+        title_label = tk.Label(self.start_frame, text="Snake Game", font=("Helvetica", 36, "bold"), bg="lightblue")
+        title_label.pack(pady=40)
+
+        play_button = tk.Button(self.start_frame, text="Start", command=self.show_difficulty_options,
+                                font=self.button_font, bg="lightgreen")
         play_button.pack(pady=10)
 
-        how_to_play_button = tk.Button(self.start_frame, text="How to Play", command=self.show_instructions)
+        how_to_play_button = tk.Button(self.start_frame, text="Cum se joaca?", command=self.show_instructions,
+                                       font=self.button_font, bg="lightgreen")
         how_to_play_button.pack(pady=10)
 
-        quit_button = tk.Button(self.start_frame, text="Quit", command=self.root.quit)
+        quit_button = tk.Button(self.start_frame, text="Quit", command=self.root.quit, font=self.button_font,
+                                bg="lightgreen")
         quit_button.pack(pady=10)
 
     def show_instructions(self):
         self.start_frame.pack_forget()
-        self.instructions_frame = tk.Frame(self.root)
+        self.instructions_frame = tk.Frame(self.root, bg="lightgreen")
         self.instructions_frame.pack(expand=True)
 
         instructions_text = "Instructiuni:\n\n" \
@@ -80,14 +105,20 @@ class SnakeGame:
                             "Mananca pentru a creste.\n" \
                             "Nu intra in margini sau in obstacole.\n" \
                             "Nu iti manca propria coada !!"
-        instructions_label = tk.Label(self.instructions_frame, text=instructions_text, font=("Arial", 14))
+        instructions_label = tk.Label(self.instructions_frame, text=instructions_text, font=("Helvetica", 16),
+                                      bg="lightgreen")
         instructions_label.pack(pady=10)
 
-        back_button = tk.Button(self.instructions_frame, text="Inapoi", command=self.show_start_screen)
+        back_button = tk.Button(self.instructions_frame, text="Inapoi", command=self.show_start_screen,
+                                font=self.button_font, bg="lightgreen")
         back_button.pack(pady=10)
 
     def show_start_screen(self):
-        self.instructions_frame.pack_forget()
+        if hasattr(self, 'difficulty_frame'):
+            self.difficulty_frame.pack_forget()
+        if hasattr(self, 'instructions_frame'):
+            self.instructions_frame.pack_forget()
+
         self.create_start_screen()
 
     def on_key_press(self, event):
@@ -129,8 +160,16 @@ class SnakeGame:
         self.canvas = tk.Canvas(self.root, width=self.width, height=self.height)
         self.canvas.pack()
 
+        # if self.score_panel is None:
+        #     self.score_panel = tk.Frame(self.root, height=30, bg="lightblue")
+        #     self.score_panel.pack(side="top", fill="x")
+        #     self.score_label = tk.Label(self.score_panel, font=("Helvetica", 16), bg="lightblue")
+        #     self.score_label.pack()
+
         self.score = 0
         self.high_score = 0
+        self.score_label.config(text=f"Scor: {self.score}   High Score: {self.high_score}")
+
         self.snake = [(self.width // 2, self.height // 2), (self.width // 2 - self.block_size, self.height // 2)]
         self.food = self.generate_food()
         self.direction = None
@@ -225,19 +264,19 @@ class SnakeGame:
             if (x, y) not in self.snake and all((x != obs[0] or y != obs[1]) for obs in self.obstacles):
                 return x, y
 
-    def draw_obstacles(self):
-        for obstacle in self.obstacles:
-            x, y = obstacle
-            self.canvas.create_rectangle(x, y, x + self.block_size, y + self.block_size, fill="red")
-
     def draw_snake(self):
         for segment in self.snake:
             x, y = segment
-            self.canvas.create_rectangle(x, y, x + self.block_size, y + self.block_size, fill="green")
+            self.canvas.create_rectangle(x, y, x + self.block_size, y + self.block_size, fill=self.snake_color)
 
     def draw_food(self):
         x, y = self.food
-        self.canvas.create_oval(x, y, x + self.block_size, y + self.block_size, fill="red")
+        self.canvas.create_oval(x, y, x + self.block_size, y + self.block_size, fill=self.food_color)
+
+    def draw_obstacles(self):
+        for obstacle in self.obstacles:
+            x, y = obstacle
+            self.canvas.create_rectangle(x, y, x + self.block_size, y + self.block_size, fill=self.obstacle_color)
 
     def update(self):
         if not self.game_over:
@@ -263,6 +302,9 @@ class SnakeGame:
             if (x, y) == self.food:
                 self.score += 1
                 self.food = self.generate_food()
+                if self.score > self.high_score:
+                    self.high_score = self.score
+                self.score_label.config(text=f"Scor: {self.score}   High Score: {self.high_score}")
             else:
                 self.snake.pop()
 
@@ -276,10 +318,7 @@ class SnakeGame:
             self.display_game_over()
 
     def display_game_over(self):
-        if self.score > self.high_score:
-            self.high_score = self.score
-
-        game_over_message = f"GAME OVER\nScorul tau: {self.score}\nHigh Score: {self.high_score}\n\nPlay again?"
+        game_over_message = f"GAME OVER\nScorul tau: {self.score}\nHigh Score: {self.high_score}\n\nVrei sa joci iar la acest nivel?"
         if tk.messagebox.askyesno("Game Over", game_over_message):
             self.reset_game()
         else:
@@ -297,9 +336,10 @@ class SnakeGame:
         self.direction = None
         self.food = self.generate_food()
 
+        self.score_label.config(text=f"Scor: {self.score}   High Score: {self.high_score}")
+
     def reset_game(self):
         self.canvas.delete("all")
-
         self.score = 0
         self.game_over = False
         self.game_started = False
