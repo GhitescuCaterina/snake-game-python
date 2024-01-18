@@ -4,6 +4,7 @@ import random
 
 
 class SnakeGame:
+    # INITIALIZAREA SI CONFIGURAREA JOCULUI
     def __init__(self, root, block_size, obstacles_file):
         self.root = root
         self.root.configure(bg='lightblue')
@@ -58,6 +59,37 @@ class SnakeGame:
     def get_obstacles_for_level(self, level):
         return [(obs["x"], obs["y"] + self.block_size) for obs in self.data["nivele"][level]["obstacole"]]
 
+    def set_game_parameters(self, nivel):
+        self.obstacles = [(obs["x"], obs["y"] + 2 * self.block_size) for obs in self.data["nivele"][nivel]["obstacole"]]
+        config = self.level_config[nivel]
+        self.update_speed = config["viteza"]
+
+    def load_obstacles(self, obstacles_file):
+        with open(obstacles_file, "r") as file:
+            obstacles_data = json.load(file)
+        return [(obs["x"] // self.block_size * self.block_size, obs["y"] // self.block_size * self.block_size) for obs
+                in obstacles_data]
+
+    # INTERFATA UTILIZATORULUI
+    def create_start_screen(self):
+        self.start_frame = tk.Frame(self.root, bg="lightblue")
+        self.start_frame.pack(expand=True)
+
+        title_label = tk.Label(self.start_frame, text="Snake Game", font=("Pixelify Sans", 36, "bold"), bg="lightblue")
+        title_label.pack(pady=40)
+
+        play_button = tk.Button(self.start_frame, text="Start", command=self.show_difficulty_options,
+                                font=self.button_font, bg="lightgreen")
+        play_button.pack(pady=10)
+
+        how_to_play_button = tk.Button(self.start_frame, text="Cum se joaca?", command=self.show_instructions,
+                                       font=self.button_font, bg="lightgreen")
+        how_to_play_button.pack(pady=10)
+
+        quit_button = tk.Button(self.start_frame, text="Quit", command=self.root.quit, font=self.button_font,
+                                bg="lightgreen")
+        quit_button.pack(pady=10)
+
     def show_difficulty_options(self):
         self.start_frame.pack_forget()
         self.difficulty_frame = tk.Frame(self.root, bg="lightblue")
@@ -78,25 +110,6 @@ class SnakeGame:
         back_button = tk.Button(self.difficulty_frame, text="Inapoi", command=self.show_start_screen,
                                 font=self.button_font)
         back_button.pack(pady=40)
-
-    def create_start_screen(self):
-        self.start_frame = tk.Frame(self.root, bg="lightblue")
-        self.start_frame.pack(expand=True)
-
-        title_label = tk.Label(self.start_frame, text="Snake Game", font=("Pixelify Sans", 36, "bold"), bg="lightblue")
-        title_label.pack(pady=40)
-
-        play_button = tk.Button(self.start_frame, text="Start", command=self.show_difficulty_options,
-                                font=self.button_font, bg="lightgreen")
-        play_button.pack(pady=10)
-
-        how_to_play_button = tk.Button(self.start_frame, text="Cum se joaca?", command=self.show_instructions,
-                                       font=self.button_font, bg="lightgreen")
-        how_to_play_button.pack(pady=10)
-
-        quit_button = tk.Button(self.start_frame, text="Quit", command=self.root.quit, font=self.button_font,
-                                bg="lightgreen")
-        quit_button.pack(pady=10)
 
     def show_instructions(self):
         self.start_frame.pack_forget()
@@ -124,6 +137,7 @@ class SnakeGame:
 
         self.create_start_screen()
 
+    # GESTIONAREA EVENIMENTELOR
     def on_key_press(self, event):
         if not self.game_started:
             if event.keysym in ['w', 'a', 's', 'd']:
@@ -141,12 +155,6 @@ class SnakeGame:
                 self.direction = "Up"
             elif event.keysym == 's' and self.direction != "Up":
                 self.direction = "Down"
-
-    def load_obstacles(self, obstacles_file):
-        with open(obstacles_file, "r") as file:
-            obstacles_data = json.load(file)
-        return [(obs["x"] // self.block_size * self.block_size, obs["y"] // self.block_size * self.block_size) for obs
-                in obstacles_data]
 
     def wait_for_start(self):
         if not self.game_started:
@@ -194,11 +202,6 @@ class SnakeGame:
                                 font=("Pixelify Sans", 16))
 
         self.root.after(0, self.wait_for_start)
-
-    def set_game_parameters(self, nivel):
-        self.obstacles = [(obs["x"], obs["y"] + 2 * self.block_size) for obs in self.data["nivele"][nivel]["obstacole"]]
-        config = self.level_config[nivel]
-        self.update_speed = config["viteza"]
 
     def start_game_up(self, event):
         if not self.game_started:
@@ -248,6 +251,7 @@ class SnakeGame:
         except Exception as e:
             print(f"Error in move_down: {e}")
 
+    # LOGICA JOCULUI
     def generate_food(self):
         while True:
             x = random.randint(0, (self.width - self.block_size) // self.block_size) * self.block_size
@@ -257,20 +261,6 @@ class SnakeGame:
 
             if (x, y) not in self.snake and (x, y) not in self.obstacles:
                 return x, y
-
-    def draw_snake(self):
-        for segment in self.snake:
-            x, y = segment
-            self.canvas.create_rectangle(x, y, x + self.block_size, y + self.block_size, fill=self.snake_color)
-
-    def draw_food(self):
-        x, y = self.food
-        self.canvas.create_oval(x, y, x + self.block_size, y + self.block_size, fill=self.food_color)
-
-    def draw_obstacles(self):
-        for obstacle in self.obstacles:
-            x, y = obstacle
-            self.canvas.create_rectangle(x, y, x + self.block_size, y + self.block_size, fill=self.obstacle_color)
 
     def update(self):
         if not self.game_over:
@@ -376,6 +366,21 @@ class SnakeGame:
         self.canvas.bind_all("<KeyPress>", self.on_key_press)
 
         self.root.after(0, self.wait_for_start)
+
+    # DESENAREA GRAFICA
+    def draw_snake(self):
+        for segment in self.snake:
+            x, y = segment
+            self.canvas.create_rectangle(x, y, x + self.block_size, y + self.block_size, fill=self.snake_color)
+
+    def draw_food(self):
+        x, y = self.food
+        self.canvas.create_oval(x, y, x + self.block_size, y + self.block_size, fill=self.food_color)
+
+    def draw_obstacles(self):
+        for obstacle in self.obstacles:
+            x, y = obstacle
+            self.canvas.create_rectangle(x, y, x + self.block_size, y + self.block_size, fill=self.obstacle_color)
 
 
 def start_game():
